@@ -6,5 +6,8 @@ if [[ $# -ne 5 ]];then
 fi
 
 USER=$1
+cp /etc/hosts hosts
+echo -e  "$2    centos-master\n$3    centos-minion1\n$4    centos-minion2\n$5    centos-minion3\n" >> hosts
+scp hosts $USER@$2:/tmp/hosts
 scp install_packages.sh $USER@$2:/home/$1/install_packages.sh
 ssh -t $USER@$2 'su - root -c  "chmod +x /home/'$1'/install_packages.sh;sh /home/'$1'/install_packages.sh;"'

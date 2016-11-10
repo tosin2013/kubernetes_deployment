@@ -1,5 +1,7 @@
 #!/bin/bash
-#installing dependancys 
+#installing dependancys
+echo "Updating hosts file"
+cp /tmp/hosts /etc/hosts 
 echo "installing dependencies"
 touch /etc/yum.repos.d/virt7-docker-common-release.repo
 echo "[virt7-docker-common-release] 
