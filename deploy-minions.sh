@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 #edit client
 sed -i s/127.0.0.1/centos-master/g /etc/kubernetes/config
 #edit KUBE_ETCD_SERVERS 
