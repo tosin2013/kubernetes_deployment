@@ -14,9 +14,7 @@ echo "isntalling packages"
 yum install -y ntpd etcd kubernetes docker
 
 echo "setting up ntp"
-systemctl start ntpd
-systemctl enable ntpd
-systemctl status ntpd
+chkconfig on ntpd; service ntpd start
 echo "waiting for time sync"
 sleep 15
 echo "checking current time"
