@@ -1,7 +1,7 @@
 #!/bin/bash
 #pushing dependices for kubernetes to machines
 if [[ $# -ne 5 ]];then 
-	echo $0: usage: ./setup-keyless.sh username 192.168.1.5 192.168.1.6 192.168.1.7 192.168.1.8
+	echo $0: usage: ./dependency_push.sh username 192.168.1.5 192.168.1.6 192.168.1.7 192.168.1.8
 	exit 1
 fi
 

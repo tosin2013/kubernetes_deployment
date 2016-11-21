@@ -1,9 +1,0 @@
-127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-
-
-172.31.125.99    centos-master
-172.31.44.167    centos-minion1
-172.31.41.167    centos-minion2
-172.31.117.38    centos-minion3
-
