@@ -1,4 +1,4 @@
-# kubernetes_depolyment
+# kubernetes_depolyment <-> WIP
 
 This will deploy a kubernetes cluster with one master and three nodes.
 
