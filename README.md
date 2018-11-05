@@ -7,25 +7,30 @@ This will deploy a kubernetes cluster with one master and three nodes.
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
-* CentOS 7 
+* Git
+* CentOS 7 or Ubuntu
 
 ### Installing
+Clone Git repository
+```
+git clone https://github.com/tosin2013/kubernetes_deployment.git
+cd kubernetes_deployment/
+```
+add worker nodes to workers file
+```
+$ cat workers
+# list of workers to be used in deployment
+```
+
 Setup login to hosts
 ```
-./setup-keyless.sh username 192.168.1.5 192.168.1.6 192.168.1.7 192.168.1.8
+./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com
 ```
 
-Run the  dependency_push.sh this will push the packages required for kubernetes it will also configure the kuberenetes cluster.
+Call Script
 ```
-./dependency_push.sh username 192.168.1.5 192.168.1.6 192.168.1.7 192.168.1.8
+ ./setup_k8_deployment.sh
 ```
-
-
-### Other Scripts used 
-* install_packages.sh  - is copied over and installed the required packages for kubernetes as root
-* deploy_master.sh - is copied over to master node and ran as root. This will configure the settings for kuberentes as master. 
-* deploy_minion.sh - is copied over to minion and ran as root. This will configure the settings for kuberenters minions.
-* a hosts file will be copied over to each machine to be used in the kuberentes cluster. 
 
 ## Deployment
 
@@ -39,7 +44,7 @@ Please read [CONTRIBUTING.md]() for details on our code of conduct, and the proc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Authors
 
@@ -52,5 +57,3 @@ See also the list of [contributors](https://github.com/your/project/contributors
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-
-
