@@ -7,7 +7,7 @@ if [ $RESULT -eq 0 ]; then
   echo "Skipping docker installation"
 else
 	echo "Attempting to install docker"
-  ./configure_docker.sh || exit $?
+  ./ubuntu/configure_docker.sh || exit $?
 fi
 
-./kubeadmin.sh || exit $?
+./ubuntu/kubeadmin.sh || exit $?
