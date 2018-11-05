@@ -11,3 +11,5 @@ else
 fi
 
 ./ubuntu/kubeadmin.sh || exit $?
+
+./ubuntu/setup_k8_ubuntu18_04.sh || exit $?
