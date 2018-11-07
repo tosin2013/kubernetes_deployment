@@ -40,9 +40,8 @@ do
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/configure_docker.sh" || exit $?
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/kubeadmin.sh" || exit $?
         scp ./ubuntu/configure_firewall_ports.sh ${USERNAME}@${worker}:/tmp/configure_firewall_ports.sh
-        ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/configure_firewall_ports.sh worker" || exit $?
+        ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "/tmp/configure_firewall_ports.sh worker" || exit $?
         scp  /tmp/addworker.sh ${USERNAME}@${worker}:/tmp/addworker.sh
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/addworker.sh" || exit $?
     fi
 done
-

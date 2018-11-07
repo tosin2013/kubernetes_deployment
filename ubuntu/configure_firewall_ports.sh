@@ -29,6 +29,7 @@ if [[ $1 == "master" ]]; then
     sudo ufw allow from any to any port 10251 proto tcp
     sudo ufw allow from any to any port 10252 proto tcp
     sudo ufw allow from any to any port 10255 proto tcp
+    sudo ufw allow ssh
     sudo ufw status verbose
 elif [[ $1 == "worker" ]]; then
     echo "Configuring worker Nodes firewall"
@@ -36,9 +37,9 @@ elif [[ $1 == "worker" ]]; then
     sudo ufw allow from any to any port 10250 proto tcp
     sudo ufw allow from any to any port 10255 proto tcp
     sudo ufw allow from any to any port 30000:32767 proto tcp
+    sudo ufw allow ssh
     sudo ufw status verbose
 else
     echo -e "\e[41mInvalid flag passed. Use master/worker flag \e[0m"
     exit 1
 fi
-
