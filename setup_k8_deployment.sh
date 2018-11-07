@@ -10,6 +10,10 @@ else
   ./ubuntu/configure_docker.sh || exit $?
 fi
 
+./ubuntu/configure_firewall_ports.sh master  || exit $?
+
 ./ubuntu/kubeadmin.sh || exit $?
 
 ./ubuntu/setup_k8_ubuntu18_04.sh || exit $?
+
+./ubuntu/configure_workers.sh  || exit $?

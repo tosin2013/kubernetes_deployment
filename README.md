@@ -35,12 +35,8 @@ Call Script
 ## Deployment
 
 
-## Built With
-
-
-## Contributing
-
-Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
+## Tested on
+* Ubuntu 18.04 Bionic Beaver LTS
 
 ## Versioning
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ $# -ne 3 ]]; then
     echo "Please see usage"
-    echo  "USAGE: ./setup-passwordless.sh hostname/ipaddree username_name your_email"
+    echo  "USAGE: ./setup-passwordless.sh hostname/ipaddress username_name your_email"
     echo  "USAGE EXAMPLE: ./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com"
     exit $1
 fi
@@ -36,4 +36,3 @@ else
     cat ~/.ssh/id_rsa.pub | ssh ${USERNAME}@${ENDPOINT} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
     ssh -o PasswordAuthentication=no -o ConnectTimeout=10 ${USERNAME}@${ENDPOINT} ls -lath || exit $?
 fi
-
