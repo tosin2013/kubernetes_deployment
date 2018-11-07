@@ -32,6 +32,13 @@ Call Script
  ./setup_k8_deployment.sh
 ```
 
+To add workers call
+```
+#populate workers file
+#call configure_workers.sh
+./ubuntu/configure_workers.sh username
+```
+
 ## Deployment
 
 

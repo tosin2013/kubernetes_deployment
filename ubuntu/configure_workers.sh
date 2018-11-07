@@ -26,7 +26,21 @@ function valid_ip()
     return $stat
 }
 
-COMMANDTOUSE=$(cat ~/kubeadminit.log | grep -i "kubeadm join")
+function testworkernode() {
+    MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  $1@$2 hostname)
+    echo "HOSTNAME: ${MACHINENAME}"
+    ping -q -c5 $MACHINENAME > /dev/null
+    RESULT=$?
+    if [ $RESULT -eq 0 ]
+    then
+       echo "ok"
+    else
+        sudo -- sh -c 'echo "'$2'    '${MACHINENAME}'" >> /etc/hosts'
+        sudo cat /etc/hosts
+    fi
+}
+
+COMMANDTOUSE=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join")
 echo -e '#!/bin/bash \nsudo '${COMMANDTOUSE}'' >  /tmp/addworker.sh
 
 WORKERSFILE=$(find ~ -name  workers)
@@ -35,6 +49,7 @@ for  worker in $CHECKIPS
 do
     if valid_ip $worker; then
         echo "worker: $worker"
+        testworkernode  "${USERNAME}" "${worker}"
         scp ./ubuntu/configure_docker.sh ${USERNAME}@${worker}:/tmp/configure_docker.sh
         scp ./ubuntu/kubeadmin.sh ${USERNAME}@${worker}:/tmp/kubeadmin.sh
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/configure_docker.sh" || exit $?
@@ -43,5 +58,8 @@ do
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "/tmp/configure_firewall_ports.sh worker" || exit $?
         scp  /tmp/addworker.sh ${USERNAME}@${worker}:/tmp/addworker.sh
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/addworker.sh" || exit $?
+        MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} $HOSTNAME)
+        kubectl label node $MACHINENAME node-role.kubernetes.io/worker=worker
+        kubectl get nodes
     fi
 done
