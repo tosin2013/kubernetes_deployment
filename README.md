@@ -26,6 +26,13 @@ Setup login to hosts
 ```
 ./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com
 ```
+Populate kube_env with your Environment information
+```
+$ cat kube_env
+# Environment Variables to be used during deployment
+USERNAME="admin" #username for remote workers
+CIDR="192.168.1.0/16" #Example Network CIDR=10.244.0.0/16 for pod network
+```
 
 Call Script
 ```

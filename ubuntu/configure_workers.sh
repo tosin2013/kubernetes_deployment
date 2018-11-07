@@ -58,8 +58,8 @@ do
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "/tmp/configure_firewall_ports.sh worker" || exit $?
         scp  /tmp/addworker.sh ${USERNAME}@${worker}:/tmp/addworker.sh
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/addworker.sh" || exit $?
-        MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} hostname)
-        kubectl label node $MACHINENAME node-role.kubernetes.io/worker=worker
+        MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} hostname) || exit $?
+        kubectl label node $MACHINENAME node-role.kubernetes.io/worker=worker || exit $?
         kubectl get nodes
     fi
 done
