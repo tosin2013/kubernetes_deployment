@@ -7,7 +7,7 @@ fi
 
 source kube_env
 
-if [[ $USERSNAME == "" ]]; then
+if [[ $USERNAME == "" ]]; then
     echo "Please populate username"
     exit $?
 fi
