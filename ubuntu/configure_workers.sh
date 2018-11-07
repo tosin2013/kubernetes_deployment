@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [[ $# -ne 1 ]]; then
     echo "Please see usage"
     echo  "USAGE: ./configure_workers.sh username"
@@ -58,8 +57,10 @@ do
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "/tmp/configure_firewall_ports.sh worker" || exit $?
         scp  /tmp/addworker.sh ${USERNAME}@${worker}:/tmp/addworker.sh
         ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} "sh /tmp/addworker.sh" || exit $?
-        MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} hostname) || exit $?
-        kubectl label node $MACHINENAME node-role.kubernetes.io/worker=worker || exit $?
+        MACHINENAME=$(ssh  -o PasswordAuthentication=no -o ConnectTimeout=10 -t  ${USERNAME}@${worker} hostname  2>&1) || exit $?
+        NEWNAME=$(echo $MACHINENAME | awk '{print $1}'| tr -d '\r' | sed -e 's/^"//' -e 's/"$//')
+        kubectl label node $NEWNAME node-role.kubernetes.io/worker=worker || exit $?
+        sleep 3s
         kubectl get nodes
     fi
 done

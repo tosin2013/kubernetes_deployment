@@ -34,6 +34,12 @@ USERNAME="admin" #username for remote workers
 CIDR="192.168.1.0/16" #Example Network CIDR=10.244.0.0/16 for pod network
 ```
 
+optional enable ssh-agent
+```
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_rsa
+```
+
 Call Script
 ```
  ./setup_k8_deployment.sh
@@ -47,6 +53,8 @@ To add workers call
 ```
 
 ## Deployment
+
+## TO-DO
 
 
 ## Tested on
