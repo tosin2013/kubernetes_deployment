@@ -26,7 +26,7 @@ function valid_ip()
     return $stat
 }
 
-COMMANDTOUSE=$(cat ~/kubeadminit.log | grep -i "kubeadm join")
+COMMANDTOUSE=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join")
 echo -e '#!/bin/bash \nsudo '${COMMANDTOUSE}'' >  /tmp/addworker.sh
 
 WORKERSFILE=$(find ~ -name  workers)
