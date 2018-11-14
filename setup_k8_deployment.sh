@@ -12,20 +12,40 @@ if [[ $USERNAME == "" ]]; then
     exit $?
 fi
 
-# confiugre docker
-docker -v  > /dev/null 2>/dev/null
-RESULT=$?
-if [ $RESULT -eq 0 ]; then
-  echo "Skipping docker installation"
-else
-	echo "Attempting to install docker"
-  ./ubuntu/configure_docker.sh || exit $?
+RELEASE=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+if [[ $RELEASE == "Ubuntu" ]]; then
+    # confiugre docker
+    docker -v  > /dev/null 2>/dev/null
+    RESULT=$?
+    if [ $RESULT -eq 0 ]; then
+      echo "Skipping docker installation"
+    else
+    	echo "Attempting to install docker"
+      ./ubuntu/configure_docker.sh || exit $?
+    fi
+
+    ./ubuntu/configure_firewall_ports.sh master  || exit $?
+
+    ./ubuntu/kubeadmin.sh || exit $?
+
+    ./k8/configure_k8.sh || exit $?
+
+    ./ubuntu/configure_workers.sh $USERNAME  || exit $?
+elif [[ $RELEASE == "Ubuntu" ]]; then
+    docker -v  > /dev/null 2>/dev/null
+    RESULT=$?
+    if [ $RESULT -eq 0 ]; then
+      echo "Skipping docker installation"
+    else
+    	echo "Attempting to install docker"
+        ./centos/configure_docker.sh || exit $?
+    fi
+    ./centos/configure_firewall_ports.sh master || exit $?
+
+    ./centos/kubeadmin.sh || exit $?
+
+    ./k8/configure_k8.sh || exit $?
+
+    ./centos/configure_workers.sh $USERNAME  || exit $?
 fi
-
-./ubuntu/configure_firewall_ports.sh master  || exit $?
-
-./ubuntu/kubeadmin.sh || exit $?
-
-./ubuntu/setup_k8_ubuntu18_04.sh || exit $?
-
-./ubuntu/configure_workers.sh $USERNAME  || exit $?

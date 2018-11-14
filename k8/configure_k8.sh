@@ -1,4 +1,5 @@
 #!/bin/bash
+#https://stackoverflow.com/questions/53256739/which-kubernetes-version-is-supported-in-docker-version-18-09
 set -xe
 
 if [[ ! -f kube_env ]]; then
@@ -20,7 +21,7 @@ sudo docker pull k8s.gcr.io/kube-controller-manager-amd64:v1.10.1
 
 sudo kubeadm init --pod-network-cidr=${CIDR} | tee /tmp/kubeadminit.log || exit $?
 
-mkdir -p $HOME/.kube
+sudo mkdir -p $HOME/.kube
 
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
