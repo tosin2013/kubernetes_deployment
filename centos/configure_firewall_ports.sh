@@ -30,21 +30,23 @@ else
     sudo systemctl start firewalld
     if [[ $1 == "master" ]]; then
         echo "Configuring Master Nodes firewall"
-        sudo firewall-cmd --zone=public --add-port=6443/tcp
-        sudo firewall-cmd --zone=public --add-port=2379-2380/tcp
-        sudo firewall-cmd --zone=public --add-port=10250/tcp
-        sudo firewall-cmd --zone=public --add-port=10251/tcp
-        sudo firewall-cmd --zone=public --add-port=10252/tcp
-        sudo firewall-cmd --zone=public --add-port=10255/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=2379-2380/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10251/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10252/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10255/tcp
         sudo firewall-cmd --zone=public --permanent --add-service=ssh
         sudo firewall-cmd --zone=public --permanent --list-services
+        sudo firewall-cmd --zone=public --permanent --list-port
     elif [[ $1 == "worker" ]]; then
         echo "Configuring worker Nodes firewall"
-        sudo firewall-cmd --zone=public --add-port=10250/tcp
-        sudo firewall-cmd --zone=public --add-port=10255/tcp
-        sudo firewall-cmd --zone=public --add-port=30000-32767/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10255/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=30000-32767/tcp
         sudo firewall-cmd --zone=public --permanent --add-service=ssh
         sudo firewall-cmd --zone=public --permanent --list-services
+        sudo firewall-cmd --zone=public --permanent --list-port
     else
         echo -e "\e[41mInvalid flag passed. Use master/worker flag \e[0m"
         exit 1

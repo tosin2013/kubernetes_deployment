@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sudo swapoff -a
-sudo echo "/root/swap swap swap sw 0 0" | sudo tee --append /etc/fstab
 sudo yum update -y
 sudo yum install -y yum-utils \
   device-mapper-persistent-data \
