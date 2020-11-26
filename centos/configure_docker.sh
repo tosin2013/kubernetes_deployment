@@ -13,15 +13,9 @@ VERSION=$(yum list docker-ce --showduplicates | sort -r| grep 18.06 | head -n 1 
 sudo yum install docker-ce-${VERSION} -y
 
 
-echo "Docker CE on CentOS recommends 	devicemapper, vfs"
-sudo mkdir -p /etc/docker/
-sudo tee -a /etc/docker/daemon.json >/dev/null <<'EOF'
-{
-  "storage-driver": "devicemapper"
-}
-EOF
-
-sudo systemctl enable docker
+sudo sed -i '/^ExecStart/ s/$/ --exec-opt native.cgroupdriver=systemd/' /usr/lib/systemd/system/docker.service
+sudo systemctl daemon-reload
+sudo systemctl enable docker --now
 
 sudo systemctl start docker
 
