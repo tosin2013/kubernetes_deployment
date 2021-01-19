@@ -39,7 +39,7 @@ function testworkernode() {
     fi
 }
 
-COMMANDTOUSE=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join")
+COMMANDTOUSE=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join" -A11 | tr --delete '\\\\\\\\')
 echo -e '#!/bin/bash \nsudo '${COMMANDTOUSE}'' >  /tmp/addworker.sh
 
 WORKERSFILE=$(find ~ -name  workers)
