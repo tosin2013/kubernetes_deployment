@@ -5,10 +5,8 @@ RESULT=$?
 if [ $RESULT -eq 0 ]; then
   echo "Skipping kubeadm, kubelet and kubectl installation"
 else
-    sudo sysctl --system
     echo "Disabling Swap."
     sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-    sudo mount -a
     sudo swapoff -a 
 
     echo -e "\e[92mInstalling kubeadm, kubelet and kubectl\e[0m"
@@ -57,7 +55,7 @@ sudo sysctl --system
     sudo setenforce 0
     sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
-    sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes || exit $?
+    sudo yum install -y kubelet=1.19.1-00 kubeadm=1.19.1-00 kubectl=1.19.1-00 --disableexcludes=kubernetes || exit $?
 
     sudo systemctl enable kubelet && sudo systemctl start kubelet || exit $?
 fi
