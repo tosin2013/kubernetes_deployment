@@ -1,3 +1,4 @@
 # Environment Variables to be used during deployment
 export USERNAME="" #username for remote workers
 export CIDR="" #Example Network CIDR="10.244.0.0/16" for pod network
+export KUBEVERSION="1.24.0-00"
