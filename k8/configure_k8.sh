@@ -14,12 +14,17 @@ if [[ $CIDR == "" ]]; then
     exit $?
 fi
 
-#sudo docker pull k8s.gcr.io/kube-scheduler-amd64:v1.10.1
-#sudo docker pull k8s.gcr.io/etcd-amd64:3.1.12
-#sudo docker pull  k8s.gcr.io/kube-apiserver-amd64:v1.10.1
-#sudo docker pull k8s.gcr.io/kube-controller-manager-amd64:v1.10.1
+cat >/tmp/kubeadm-config.yaml<<EOF
+kind: ClusterConfiguration
+apiVersion: kubeadm.k8s.io/v1beta3
+kubernetesVersion: v1.24.0
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+EOF
 
-sudo kubeadm init --apiserver-advertise-address $(hostname -I | awk '{print $1}') --pod-network-cidr ${CIDR} | tee /tmp/kubeadminit.log || exit $?
+sudo kubeadm init --apiserver-advertise-address $(hostname -I | awk '{print $1}') --pod-network-cidr ${CIDR}  --config kubeadm-config.yaml | tee /tmp/kubeadminit.log || exit $?
 
 sudo mkdir -p $HOME/.kube
 

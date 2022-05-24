@@ -32,6 +32,7 @@ $ cat kube_env
 # Environment Variables to be used during deployment
 USERNAME="admin" #username for remote workers
 CIDR="192.168.1.0/16" #Example Network CIDR=10.244.0.0/16 for pod network
+export KUBEVERSION="1.24.0-00"
 ```
 
 optional enable ssh-agent
