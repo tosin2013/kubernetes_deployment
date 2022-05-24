@@ -27,8 +27,8 @@ if [[ -z $CHECKSSHKEYPATH ]]; then
     ls ~/.ssh/id_* || exit $?
 fi
 
-ssh  -o PasswordAuthentication=no -o ConnectTimeout=10  ${USERNAME}@${ENDPOINT} ls -lath
-RESULT=$?
+#ssh  -o PasswordAuthentication=no -o ConnectTimeout=10  ${USERNAME}@${ENDPOINT} ls -lath
+#RESULT=$?
 if [ $RESULT -eq 0 ]; then
   echo "Skipping ssh Configuraton"
 else
