@@ -1,38 +1,81 @@
 #!/bin/bash
-if [[ $# -ne 3 ]]; then
-    echo "Please see usage"
-    echo  "USAGE: ./setup-passwordless.sh hostname/ipaddress username_name your_email"
-    echo  "USAGE EXAMPLE: ./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com"
-    exit $1
+
+
+# Function to install sshpass on Ubuntu
+install_sshpass_ubuntu() {
+    sudo apt-get update
+    sudo apt-get install -y sshpass
+}
+
+# Function to install sshpass on Fedora
+install_sshpass_fedora() {
+    sudo dnf install -y sshpass
+}
+
+# Check if sshpass is installed and install it if necessary
+if ! command -v sshpass &>/dev/null; then
+    echo "sshpass is not installed. Installing..."
+    if [[ -f /etc/os-release ]]; then
+        source /etc/os-release
+        case $ID in
+            ubuntu)
+                install_sshpass_ubuntu
+                ;;
+            fedora)
+                install_sshpass_fedora
+                ;;
+            *)
+                echo "Unsupported Linux distribution. Please install sshpass manually."
+                exit 1
+                ;;
+        esac
+    else
+        echo "Unsupported Linux distribution. Please install sshpass manually."
+        exit 1
+    fi
 fi
 
-ENDPOINT="${1}"
-USERNAME=${2}
-EMAIL=${3}
-
-#https://stackoverflow.com/questions/32291127/bash-regex-email
-if [[ "$EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$ ]]
-then
-   echo "Email address $EMAIL is valid."
-else
-   echo "Email address $EMAIL is invalid."
-   exit $1
+# Check if the workers file exists
+if [[ ! -f "workers" ]]; then
+    echo "Error: 'workers' file not found. Create the file with one machine name per line."
+    exit 1
 fi
 
-#THANKS TO: https://linuxize.com/post/how-to-setup-passwordless-ssh-login/
-CHECKSSHKEYPATH=$(ls -al ~/.ssh/id_*.pub 2>/dev/null)
-if [[ -z $CHECKSSHKEYPATH ]]; then
-    echo "Generate a new SSH key pair."
-    ssh-keygen -t rsa -b 4096 -C ${EMAIL}
-    ls ~/.ssh/id_* || exit $?
+if [[ $# -ne 2 ]]; then
+    echo "Usage:"
+    echo "  ./setup-passwordless.sh username_name password"
+    echo "Example:"
+    echo "  ./setup-passwordless.sh admin password123"
+    exit 1
 fi
 
-#ssh  -o PasswordAuthentication=no -o ConnectTimeout=10  ${USERNAME}@${ENDPOINT} ls -lath
-#RESULT=$?
-if [ $RESULT -eq 0 ]; then
-  echo "Skipping ssh Configuraton"
-else
-    ssh-copy-id ${USERNAME}@${ENDPOINT}
-    cat ~/.ssh/id_rsa.pub | ssh ${USERNAME}@${ENDPOINT} "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-    ssh -o PasswordAuthentication=no -o ConnectTimeout=10 ${USERNAME}@${ENDPOINT} ls -lath || exit $?
-fi
+# Read machine names from the workers file
+while read -r MACHINE; do
+    # Skip lines starting with "#" (comments)
+    if [[ "$MACHINE" =~ ^\s*# ]]; then
+        continue
+    fi
+    USERNAME="${1}"
+    PASSWORD="${2}"
+
+    # Check for existing SSH key
+    CHECKSSHKEYPATH=$(ls -al ~/.ssh/cluster-key.pub 2>/dev/null)
+    if [[ -z $CHECKSSHKEYPATH ]]; then
+        echo "Generating a new SSH key pair."
+        ssh-keygen -t rsa -b 4096 -f ~/.ssh/cluster-key -N ''
+        ls ~/.ssh/cluster-key || exit $?
+    fi
+
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/cluster-key 
+
+    # Use sshpass to automate password entry
+    if ssh -o PasswordAuthentication=no -o ConnectTimeout=10 "${USERNAME}@${MACHINE}" ls -lath 2>/dev/null; then
+        echo "Skipping SSH configuration for ${MACHINE}."
+    else
+        sshpass -p "${PASSWORD}" ssh-copy-id "${USERNAME}@${MACHINE}"
+        cat ~/.ssh/cluster-key.pub | sshpass -p "${PASSWORD}" ssh "${USERNAME}@${MACHINE}" "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+        ssh -o PasswordAuthentication=no -o ConnectTimeout=10 "${USERNAME}@${MACHINE}" ls -lath || exit $?
+    fi
+
+done < "workers"

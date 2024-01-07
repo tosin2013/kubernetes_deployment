@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 * Git
-* CentOS 7 or Ubuntu
+* Fedora 39 or Ubuntu
 
 ### Installing
 Clone Git repository
@@ -18,13 +18,14 @@ cd kubernetes_deployment/
 ```
 add worker nodes to workers file
 ```
+$ ./v
 $ cat workers
 # list of workers to be used in deployment
 ```
 
 Setup login to hosts
 ```
-./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com
+./setup-passwordless.sh admin admin@megacorp.com password123
 ```
 Populate kube_env with your Environment information
 ```
@@ -59,7 +60,7 @@ To add workers call
 
 
 ## Tested on
-* Ubuntu 18.04 Bionic Beaver LTS
+* Ubuntu 22.04.3 LTS
 
 ## Versioning
 
