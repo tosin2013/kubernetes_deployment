@@ -7,6 +7,14 @@ fi
 
 source kube_env
 
+
+CHECKSSHKEYPATH=$(ls -al ~/.ssh/cluster-key.pub 2>/dev/null)
+if [[ -z $CHECKSSHKEYPATH ]]; then
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/cluster-key
+fi
+
+
 if [[ $USERNAME == "" ]]; then
     echo "Please populate username"
     exit $?

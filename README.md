@@ -18,14 +18,14 @@ cd kubernetes_deployment/
 ```
 add worker nodes to workers file
 ```
-$ ./v
+$ ./add-workers.sh
 $ cat workers
 # list of workers to be used in deployment
 ```
 
 Setup login to hosts
 ```
-./setup-passwordless.sh admin admin@megacorp.com password123
+./setup-passwordless.sh 192.168.60.55 admin admin@megacorp.com
 ```
 Populate kube_env with your Environment information
 ```
