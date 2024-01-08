@@ -84,10 +84,15 @@ function test_workernode() {
 }
 
 
-# Parse the Kubernetes join command from /tmp/kubeadminit.log
-COMMANDTOUSE=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join" -A11 | tr --delete '\\\\\\\\')
-COMMANDTOUSE="sudo kubeadm join 192.168.122.25:6443 --token scdkgg.88q6khuw4aig73to --discovery-token-unsafe-skip-ca-verification"
-echo -e "#!/bin/bash\nsudo $COMMANDTOUSE" > "${ADD_WORKER_SCRIPT}"
+# 1. Read the file and extract the "kubeadm join" command with token, excluding trailing backslash
+command=$(cat /tmp/kubeadminit.log | grep -i "kubeadm join.*--token.*" -o | sed 's/\\$//')
+
+# 2. Add the "--discovery-token-unsafe-skip-ca-verification" flag
+new_command="${command} --discovery-token-unsafe-skip-ca-verification"
+
+# 3. Echo the modified command (uncomment to execute it directly)
+echo "${new_command}"
+echo -e "#!/bin/bash\nsudo $command" > "${ADD_WORKER_SCRIPT}"
 
 # Find the workers file and read the IP addresses
 WORKERSFILE=$(find ~ -name workers)
