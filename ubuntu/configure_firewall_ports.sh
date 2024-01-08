@@ -34,6 +34,20 @@
             sudo ufw allow from any to any port 10251 proto tcp
             sudo ufw allow from any to any port 10252 proto tcp
             sudo ufw allow from any to any port 10255 proto tcp
+            sudo ufw allow from any to any port 7946 proto tcp
+            # Allow Calico-specific ports (adjust as needed)
+            sudo ufw allow from any to any port 179 proto tcp
+            sudo ufw allow from any to any port 547 proto udp
+            sudo ufw allow from any to any port 546 proto udp
+            sudo ufw allow from any to any port 4789 proto udp
+            sudo ufw allow from any to any port 5473 proto tcp
+            sudo ufw allow from any to any port 6783 proto tcp
+            sudo ufw allow from any to any port 6961 proto tcp
+
+            # Allow Calico BGP ports (if used)
+            sudo ufw allow from any to any port 179 proto udp
+            sudo ufw allow from any to any port 51820:51821 proto udp
+
             sudo ufw allow ssh
             sudo ufw status verbose
             exit 0
@@ -43,6 +57,19 @@
             sudo ufw allow from any to any port 10250 proto tcp
             sudo ufw allow from any to any port 10255 proto tcp
             sudo ufw allow from any to any port 30000:32767 proto tcp
+            sudo ufw allow from any to any port 7946 proto tcp
+            # Allow Calico-specific ports (adjust as needed)
+            sudo ufw allow from any to any port 179 proto tcp
+            sudo ufw allow from any to any port 547 proto udp
+            sudo ufw allow from any to any port 546 proto udp
+            sudo ufw allow from any to any port 4789 proto udp
+            sudo ufw allow from any to any port 5473 proto tcp
+            sudo ufw allow from any to any port 6783 proto tcp
+            sudo ufw allow from any to any port 6961 proto tcp
+
+            # Allow Calico BGP ports (if used)
+            sudo ufw allow from any to any port 179 proto udp
+            sudo ufw allow from any to any port 51820:51821 proto udp
             sudo ufw allow ssh
             sudo ufw status verbose
         else
