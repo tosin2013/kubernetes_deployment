@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 # Check if kubeadm is already installed
 if command -v kubeadm &>/dev/null; then
