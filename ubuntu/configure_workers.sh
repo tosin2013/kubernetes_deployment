@@ -1,12 +1,12 @@
 #!/bin/bash
-set -xe
-export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+#set -xe
+#export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 
 # Configuration
 USERNAME="$1"
 SSH_KEY_PATH="${HOME}/.ssh/cluster-key"
 DOCKER_SCRIPT="./ubuntu/configure_docker.sh"
-KUBEADM_SCRIPT="./ubuntu/kubeadmin.sh"
+KUBEADM_SCRIPT="./ubuntu/kubeadmin-worker.sh"
 FIREWALL_PORTS_SCRIPT="./ubuntu/configure_firewall_ports.sh"
 ADD_WORKER_SCRIPT="/tmp/addworker.sh"
 
@@ -92,7 +92,7 @@ new_command="${command} --discovery-token-unsafe-skip-ca-verification"
 
 # 3. Echo the modified command (uncomment to execute it directly)
 echo "${new_command}"
-echo -e "#!/bin/bash\nsudo $command" > "${ADD_WORKER_SCRIPT}"
+echo -e "#!/bin/bash\nsudo $new_command" > "${ADD_WORKER_SCRIPT}"
 
 # Find the workers file and read the IP addresses
 WORKERSFILE=$(find ~ -name workers)
@@ -109,15 +109,34 @@ for worker in ${CHECKIPS}; do
             test_workernode "${worker}"
 
             # Copy necessary scripts to the worker node
-            scp -i "${SSH_KEY_PATH}" "${DOCKER_SCRIPT}" "${USERNAME}@${worker}:/tmp/configure_docker.sh"
-            scp -i "${SSH_KEY_PATH}" "${KUBEADM_SCRIPT}" "${USERNAME}@${worker}:/tmp/kubeadmin.sh"
-            ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "sh /tmp/configure_docker.sh" || exit $?
-            ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "sh /tmp/kubeadmin.sh"
+            # Check if Docker is installed
+            docker_installed=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "docker --version 2>/dev/null")
 
-            scp -i "${SSH_KEY_PATH}" "${FIREWALL_PORTS_SCRIPT}" "${USERNAME}@${worker}:/tmp/configure_firewall_ports.sh"
+            # Check if kubeadm is installed
+            kubeadm_installed=$(ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "kubeadm version 2>/dev/null")
+
+            # If Docker and kubeadm are not installed, then install them
+            if [ -z "$docker_installed" ]; then
+                scp -i "${SSH_KEY_PATH}" "${DOCKER_SCRIPT}" "${USERNAME}@${worker}:/tmp/configure_docker.sh"
+                ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "sh /tmp/configure_docker.sh" || exit $?
+            fi
+
+            if [ -z "$kubeadm_installed" ]; then
+                scp -i "${SSH_KEY_PATH}" "${KUBEADM_SCRIPT}" "${USERNAME}@${worker}:/tmp/kubeadm.sh"
+                ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "sh /tmp/kubeadm.sh" #|| exit $?
+            fi
+
+
+            # Check if configure_firewall_ports.sh is present on the target device
+            if ! ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "[ -f /tmp/configure_firewall_ports.sh ]"; then
+                scp -i "${SSH_KEY_PATH}" "${FIREWALL_PORTS_SCRIPT}" "${USERNAME}@${worker}:/tmp/configure_firewall_ports.sh"
+            fi
             ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "/tmp/configure_firewall_ports.sh worker" || exit $?
 
-            scp -i "${SSH_KEY_PATH}" "${ADD_WORKER_SCRIPT}" "${USERNAME}@${worker}:${ADD_WORKER_SCRIPT}"
+            # Check if add_worker_script is present on the target device
+            if ! ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "[ -f ${ADD_WORKER_SCRIPT} ]"; then
+                scp -i "${SSH_KEY_PATH}" "${ADD_WORKER_SCRIPT}" "${USERNAME}@${worker}:${ADD_WORKER_SCRIPT}"
+            fi
             ssh -o PasswordAuthentication=no -o ConnectTimeout=10 -i "${SSH_KEY_PATH}" "${USERNAME}@${worker}" "sh ${ADD_WORKER_SCRIPT}" || exit $?
 
             # Label the worker node
